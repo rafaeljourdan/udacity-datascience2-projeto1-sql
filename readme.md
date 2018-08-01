@@ -44,3 +44,24 @@ GROUP BY c.CustomerId
 ORDER BY Total DESC	
 ```
 ![Set1 - Pergunta 3](files/set1_pergunta3.png)
+
+
+## Conjunto 2
+
+### Pergunta 1
+Use sua consulta para retornar o e-mail, nome, sobrenome e gênero de todos os ouvintes de Rock. Retorne sua lista ordenada alfabeticamente por endereço de e-mail, começando por A. Você consegue encontrar um jeito de lidar com e-mails duplicados para que ninguém receba vários e-mails?   
+
+Eu escolhi linkar as informações das tabelas Customer (cliente), Invoice (fatura), InvoiceLine (linha de faturamento), Track (música) e Genre (gênero), mas você pode encontrar outra forma de obter a informação.   
+
+```sql
+SELECT DISTINCT c.Email, c.FirstName, c.LastName, g.Name
+FROM Customer c
+LEFT JOIN Invoice i ON c.CustomerId = i.CustomerId
+LEFT JOIN InvoiceLine il ON i.InvoiceId = il.InvoiceId
+LEFT JOIN Track t ON il.TrackId = t.TrackId
+LEFT JOIN Genre g ON t.GenreId = g.GenreId
+WHERE g.Name = 'Rock'
+ORDER BY c.Email
+```
+![Set2 - Pergunta 1](files/set2_pergunta1.png)
+
