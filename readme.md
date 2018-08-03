@@ -65,3 +65,69 @@ ORDER BY c.Email
 ```
 ![Set2 - Pergunta 1](files/set2_pergunta1.png)
 
+
+### Pergunta 2
+
+Quem está escrevendo as músicas de rock?   
+
+Agora que sabemos que nossos clientes amam rock, podemos decidir quais músicos convidar para tocar no show.   
+
+Vamos convidar os artistas que mais escreveram as músicas de rock em nosso banco de dados. Escreva uma consulta que retorna o nome do Artist (artista) e a contagem total de músicas das dez melhores bandas de rock.    
+
+Você precisará usar as tabelas Genre (gênero), Track (música) , Album (álbum), and Artist (artista).    
+
+```sql
+SELECT art.ArtistId, art.Name, COUNT(*) AS Songs
+FROM Artist art
+LEFT JOIN Album alb ON art.ArtistId = alb.ArtistId
+LEFT JOIN Track t ON alb.AlbumId = t.AlbumId
+LEFT JOIN Genre g ON t.GenreId = g.GenreId
+WHERE g.Name = 'Rock'
+GROUP BY art.ArtistId, art.Name
+ORDER BY Songs DESC
+```
+
+![Set2 - Pergunta 2](files/set2_pergunta2.png)    
+
+
+
+### Pergunta 3
+
+Primeiro, descubra qual artista ganhou mais de acordo com InvoiceLines (linhas de faturamento)?    
+
+
+```sql
+SELECT art.ArtistId, art.Name, SUM(il.UnitPrice) AS Total
+FROM Artist art
+LEFT JOIN Album alb ON art.ArtistId = alb.ArtistId
+LEFT JOIN Track t ON alb.AlbumId = t.AlbumId
+LEFT JOIN InvoiceLine il ON t.TrackId = il.TrackId
+GROUP BY art.ArtistId, art.Name
+ORDER BY Total DESC
+```
+
+![Set2 - Pergunta 2](files/set2_pergunta3_parte1.png)
+
+
+Agora use este artista para encontrar qual cliente gastou mais com este artista.    
+
+Para essa consulta, você precisará usar as tabelas Invoice (fatura), InvoiceLine (linha de faturamento), Track (música), Customer (cliente), Album (álbum) e Artist (artista).    
+
+Observe que essa é complicada porque a quantia Total gasta na tabela Invoice (fatura) pode não ser em um só produto, então você precisa usar a tabela InvoiceLine (linha de faturamento) para descobrir quanto de cada produto foi comprado e, então, multiplicar isso pelo preço de cada artista.
+
+```sql
+SELECT art.Name, SUM(il.UnitPrice*Quantity) AS AmountSpent, c.CustomerId, c.FirstName, c.LastName
+FROM Artist art
+LEFT JOIN Album alb ON art.ArtistId = alb.ArtistId
+LEFT JOIN Track t ON alb.AlbumId = t.AlbumId
+INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId
+LEFT JOIN Invoice i ON il.InvoiceId = i.InvoiceId
+LEFT JOIN Customer c ON i.CustomerId = c.CustomerId
+WHERE art.ArtistId = 90
+GROUP BY c.FirstName, c.LastName
+ORDER BY AmountSpent DESC
+```
+
+
+![Set2 - Pergunta 2](files/set2_pergunta3_solucao.png)
+
