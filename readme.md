@@ -131,3 +131,36 @@ ORDER BY AmountSpent DESC
 
 ![Set2 - Pergunta 2](files/set2_pergunta3_solucao.png)
 
+
+## Conjunto 3: Avançado
+
+### Pergunta 1
+
+Queremos descobrir o gênero musical mais popular em cada país. Determinamos o gênero mais popular como o gênero com o maior número de compras. Escreva uma consulta que retorna cada país juntamente a seu gênero mais vendido. Para países onde o número máximo de compras é compartilhado retorne todos os gêneros.
+
+```sql
+SELECT sub2.Purchases, sub3.Country, sub3.Name, sub3.GenreID
+FROM
+	(SELECT MAX(sub1.Quantity) Purchases, Country, Name, GenreID
+	FROM 
+		(SELECT SUM(il.Quantity) Quantity, c.Country Country, g.Name Name, g.GenreID GenreID
+		FROM InvoiceLine il
+		LEFT JOIN Invoice i ON i.Invoiceid = il.Invoiceid
+		LEFT JOIN Customer c ON c.Customerid = i.Customerid
+		LEFT JOIN Track t ON t.Trackid = il.Trackid
+		LEFT JOIN Genre g ON g.Genreid = t.Genreid
+		GROUP BY c.Country, g.Name, g.Genreid) sub1
+	GROUP BY Country) sub2
+LEFT JOIN (
+	SELECT SUM(il.Quantity) Quantity, c.Country Country, g.Name Name, g.GenreID GenreID
+	FROM InvoiceLine il 
+	LEFT JOIN Invoice i ON i.invoiceid = il.invoiceid
+	LEFT JOIN Customer c ON c.Customerid = i.Customerid
+	LEFT JOIN Track t ON t.Trackid = il.Trackid
+	LEFT JOIN Genre g ON g.Genreid = t.Genreid
+	GROUP BY c.Country, g.Name, g.Genreid) sub3	
+	
+ON sub2.Country = sub3.Country AND sub2.Purchases = sub3.Quantity
+```
+
+![Set3 - Pergunta 1](files/set3_pergunta1_solucao.png)
